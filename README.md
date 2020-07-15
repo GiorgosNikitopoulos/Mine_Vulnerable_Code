@@ -20,3 +20,12 @@ The github links mined by parse_nvd.py contain pulls which contain many commits.
 
 The get_files.py script creates a file_names.list file containing the file names of each file downloaded. 
 The files downloaded end up on the files/ directory. They have the format of <good_or_bad>_<Vulnerability_ID>_<File_ID> 
+
+## make_directories.py
+- This script requires the file_names.list file made by get_files.py and the commits.list file created by clean_pulls.py
+- This script requires the dataset/ directory in the same directory as the script. Create the dataset/ subdirectory with the command 
+    ```
+    mkdir dataset
+    ```
+This script creates the subdirectory tree requires for the dataset 
+

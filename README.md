@@ -27,5 +27,12 @@ The files downloaded end up on the files/ directory. They have the format of <go
     ```
     mkdir dataset
     ```
-This script creates the subdirectory tree requires for the dataset 
+This script creates the subdirectory tree required for the dataset 
+The file_exts list contains the list of all ALLOWED file extensions. File extensions are filtered by this list 
+j
+## populate_files.py
+- This script requires the file_names.list file made by get_files.py and the commits.list file created by clean_pulls.py
+- This script requires the dataset/ directory formatted by the make_directories.py script. 
+This script populates the subdirectory tree required for the dataset 
+The file_exts list contains the list of all ALLOWED file extensions. File extensions are filtered by this list 
 

@@ -11,3 +11,12 @@ The parse_nvd.py file parses the nvd database and creates a semi-colon seperated
 - This script requires the csv of github links parse_nvd.py created. 
 
 The github links mined by parse_nvd.py contain pulls which contain many commits. This script flattens the pulls into commits. 
+## get_files.py
+- This script requires a files/ directory. Create the files/ directory with the command
+    ```
+    mkdir files
+    ```
+- This script requires the csv of github links clean_pulls.py created. (named commits.list) 
+
+The get_files.py script creates a file_names.list file containing the file names of each file downloaded. 
+The files downloaded end up on the files/ directory. They have the format of <good_or_bad>_<Vulnerability_ID>_<File_ID> 

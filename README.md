@@ -46,3 +46,5 @@ Make sure to redirect the output to a file via the > operator.
   The list of repositories is highest_cve_rated_oss.list from the assets/ directory. This list is derived from the
   VulinOSS project. 
   In this case the script mines a multitude of vulnerability types. 
+To make your own class of vulnerabilities to mine. Use the make_repo_list to make a repo file from already existing
+commits and change the REPO_PATH 

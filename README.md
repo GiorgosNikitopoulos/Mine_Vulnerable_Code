@@ -36,3 +36,13 @@ j
 This script populates the subdirectory tree required for the dataset 
 The file_exts list contains the list of all ALLOWED file extensions. File extensions are filtered by this list 
 
+## mine_commits.py
+This script mines commits from github. It receives a list (for the name reffer to list below) of repositories and searches commits with keywords. It then scores them based on the commit message.
+Make sure to redirect the output to a file via the > operator. 
+- In case the import of the CommitMiner class is: mine_commits_class_web_app
+  The list of repositories is web_app.list from the assets/ directory.
+  Also the script mines only web vulnerabilities (XSS, CSRF, SQLi)
+- In case the import of the CommitMiner class is: mine_commits_class
+  The list of repositories is highest_cve_rated_oss.list from the assets/ directory. This list is derived from the
+  VulinOSS project. 
+  In this case the script mines a multitude of vulnerability types. 

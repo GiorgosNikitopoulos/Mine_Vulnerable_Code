@@ -1,6 +1,9 @@
 # Vulnerable Code Dataset
 
 The toolkits subdirectory contains scripts.
+<p align="center">
+<img src="docs/diagram.png">
+</p>
 
 ## parse_nvd.py
 - This script needs an nvd/ directory in the same subdirectory as the script containing all of the .json files from the NVD Database. The version of the schema it parses is 1.1
@@ -55,3 +58,4 @@ This is a UI in which a researcher can sort out False Positives out of the commi
 of the commit press the 'c' key in order to copy the commit url to clipboard. 
 The two center columns display the scores of the Random Forest model and the Neural Network model. The last column displays the CWE class of the commit. 
 If the commit message is too long scroll with the j and k keys.
+

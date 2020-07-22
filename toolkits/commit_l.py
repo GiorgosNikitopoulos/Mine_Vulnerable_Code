@@ -6,7 +6,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 import pdb
 
 
-ACCESS_TOKEN = '0f493cc6faa42fc640003ab0276c570cb952609d'
+ACCESS_TOKEN = ''
 
 class Commit(object):
     def __init__(self, link):

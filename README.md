@@ -1,6 +1,8 @@
 # Vulnerable Code Dataset
 
 Follow the workflow chart and the script descriptions in order to either mine the NVD as is or find new vulnerabilities. 
+Populate the ACCESS_TOKEN parameter in any file needed with the Github API access token. Replace the name GiorgosNikitopoulos
+with your own username.
 <p align="center">
 <img src="docs/diagram.png">
 </p>

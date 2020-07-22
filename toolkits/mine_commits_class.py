@@ -21,10 +21,13 @@ import warnings
 import pickle
 import numpy as np
 import pdb
+import base64
+import csv
 
 MODEL_PATH = '../assets/model.pickle'
 VECTORIZER_PATH = '../assets/vectorizer.pickle'
 REPO_PATH = '../assets/highest_cve_rated_oss.csv'
+OUTPUT_PATH_CSV = '../assets/vulns.csv'
 ACCESS_TOKEN = ''
 MAX_SEQ_LENGTH = 500
 
@@ -155,6 +158,11 @@ class CommitMiner(object):
                     print(self.get_browsable_url(url) + ';' + str(self.model.predict(nn_sequence)) + ';' + str(forest_result) + ';' + self.get_cwe(message))
                     grads = self.compute_saliency_matrix(nn_sequence)
                     abs_nor_res = self.abs_nor_salmat(grads, nn_sequence, two_dimensions = False, range_normalize = True)
+                    anr_pickled = pickle.dumps(abs_nor_res)
+                    anr_b64_encoded = base64.b64encode(anr_pickled).decode('utf-8')
+                    with open(OUTPUT_PATH_CSV, 'a', newline = '') as csvfile:
+                        writer = csv.writer(csvfile, delimiter = ';', quotechar = '"', quoting = csv.QUOTE_ALL)
+                        writer.writerow(self.get_browsable_url(url), str(self.model.predict(nn_sequence)), str(forest_result), self.get_cwe(message), str(anr_b64_encoded))
                     #self.html_abs_nor_res(abs_nor_res)
 
             time.sleep(60)

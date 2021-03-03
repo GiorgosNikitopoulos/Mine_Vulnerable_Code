@@ -1,6 +1,8 @@
 import requests
+import argparse
 import logging
 from parse import *
+import pandas as pd
 
 
 def construct_parent_link(file_links, old_hash, new_hash):
@@ -62,14 +64,24 @@ def get_old_new_links(url):
     return old_file, file_link
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-e', '--exclude')
+    args = parser.parse_args()
+    
+
+    test_strings = ['test']
+    df = pd.read_csv('commits.list', sep = ';', header = None)
     with open("commits.list", 'r') as f:
         urls = f.readlines()
     file_names_file = open("file_names.list", 'w')
 
     lines = [x.strip() for x in urls]
     urls = [x.rsplit(';', 1)[1] for x in lines]
+    i_true = 0
+    print(len(urls))
     for i, url in enumerate(urls):
         print(url)
+        exception_happened = 0
         if(url.count("patch") > 0):
             continue
         if url.count('github') == 0:
@@ -85,25 +97,36 @@ if __name__ == "__main__":
                 new_link = 'https://www.github.com/' + new_link
 
             try:
-                bad_r = requests.get(bad_link)
                 name = bad_link.rsplit('/', 1)[1]
-                bad_file = open("files/bad_" + str(i) + "_" + str(j), 'w')
-                bad_file.write(bad_r.text)
-                print("bad_" + str(i) + '_' + str(j) + ';' + name, file = file_names_file)
-                bad_file.close()
+                if any(x in name for x in test_strings) != True:
+                    bad_r = requests.get(bad_link)
+                    bad_file = open("files/bad_" + str(i_true) + "_" + str(j), 'w')
+                    bad_file.write(bad_r.text)
+                    print("bad_" + str(i_true) + '_' + str(j) + ';' + name, file = file_names_file)
+                    bad_file.close()
             except Exception as e:
                 logging.warning("============")
                 logging.warning("Requests error: " + str(i))
+                df.drop(index=i, inplace = True)
                 logging.warning("============")
+                exception_happened = 1
             try:
-                good_r = requests.get(new_link)
                 name = new_link.rsplit('/', 1)[1]
-                good_file = open("files/good_" + str(i) + "_" + str(j), 'w')
-                good_file.write(good_r.text)
-                print("good_" + str(i) + '_' + str(j) + ';' + name, file = file_names_file)
-                good_file.close()
+                if any(x in name for x in test_strings) != True:
+                    good_r = requests.get(new_link)
+                    good_file = open("files/good_" + str(i_true) + "_" + str(j), 'w')
+                    good_file.write(good_r.text)
+                    print("good_" + str(i_true) + '_' + str(j) + ';' + name, file = file_names_file)
+                    good_file.close()
             except Exception as e:
                 logging.warning("============")
                 logging.warning("Requests error: " + str(i))
+                df.drop(index=i, inplace = True)
                 logging.warning("============")
+                exception_happened = 1
+        if exception_happened == 0:
+            i_true = i_true + 1
+
+
+    df.to_csv('commits_final.list', sep=';', header=None, index = None)
 

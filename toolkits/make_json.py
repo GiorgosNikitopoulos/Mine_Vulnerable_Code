@@ -2,8 +2,8 @@ import csv
 import json
 
 NAME_FILE = "file_names.list"
-COMMIT_FILE = "commits.list"
-OUTPUT_FILE = "out.json"
+COMMIT_FILE = "commits_final.list"
+OUTPUT_FILE = "metadata.json"
 
 num_lines = sum(1 for line in open(COMMIT_FILE))
 json_list = list()

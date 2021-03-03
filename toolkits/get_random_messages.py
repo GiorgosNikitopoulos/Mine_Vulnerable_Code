@@ -12,7 +12,7 @@ all_messages = list()
 all_cwes = list()
 all_cves = list()
 all_commits = pd.read_csv('commits_final.list', sep = ';', quoting = csv.QUOTE_ALL, header = None)
-all_our_commits = pd.read_csv('all_commit_msgs_new.list', sep = ';', quoting = csv.QUOTE_ALL, header = None)
+all_our_commits = pd.read_csv('generic_msgs.list', sep = ';', quoting = csv.QUOTE_ALL, header = None)
 
 print(all_our_commits[2])
 #if(all_our_commits[2].str.contains('https://github.com/OpenNMS/opennms/commit/8710463077c10034fcfa06556a98fb1a1a64fd0d').any()):
@@ -89,7 +89,7 @@ for j, commit_link in enumerate(all_commits[2]):
         dataframe['rcommit_links'] = all_random_commit_links
         dataframe['rcommit_msgs'] = all_random_commit_msgs
 
-        dataframe.to_csv('all_commit_msgs_new.list', sep = ';', header = False, index = False, quoting = csv.QUOTE_ALL)
+        dataframe.to_csv('generic_msgs.list', sep = ';', header = False, index = False, quoting = csv.QUOTE_ALL)
 
     except Exception as e:
         print(api_link)
@@ -105,5 +105,5 @@ dataframe['numbers'] = all_numbers
 dataframe['rcommit_links'] = all_random_commit_links
 dataframe['rcommit_msgs'] = all_random_commit_msgs
 
-dataframe.to_csv('all_commit_msgs_new.list', sep = ';', header = False, index = False, quoting = csv.QUOTE_ALL)
+dataframe.to_csv('generic_msgs.list', sep = ';', header = False, index = False, quoting = csv.QUOTE_ALL)
 

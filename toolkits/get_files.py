@@ -83,6 +83,9 @@ if __name__ == "__main__":
         print(url)
         exception_happened = 0
         if(url.count("patch") > 0):
+            logging.warning("Requests error: " + str(i))
+            logging.warning("Requests error: " + bad_link)
+            df.drop(index=i, inplace = True)
             continue
         if url.count('github') == 0:
             url = 'https://www.github.com/' + url
@@ -107,9 +110,11 @@ if __name__ == "__main__":
             except Exception as e:
                 logging.warning("============")
                 logging.warning("Requests error: " + str(i))
+                logging.warning("Requests error: " + bad_link)
                 df.drop(index=i, inplace = True)
                 logging.warning("============")
                 exception_happened = 1
+                break
             try:
                 name = new_link.rsplit('/', 1)[1]
                 if any(x in name for x in test_strings) != True:
@@ -124,8 +129,12 @@ if __name__ == "__main__":
                 df.drop(index=i, inplace = True)
                 logging.warning("============")
                 exception_happened = 1
-        if exception_happened == 0:
+        if exception_happened == 0 and len(old_links) > 0:
             i_true = i_true + 1
+        else exception_happened == 0 and len(old_links) == 0:
+            logging.warning("============")
+            logging.warning("Requests error: " + str(i))
+            df.drop(index=i, inplace = True)
 
 
     df.to_csv('commits_final.list', sep=';', header=None, index = None)

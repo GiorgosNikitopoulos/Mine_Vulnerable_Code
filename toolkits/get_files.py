@@ -71,6 +71,8 @@ if __name__ == "__main__":
 
     test_strings = ['test']
     df = pd.read_csv('commits.list', sep = ';', header = None)
+    df = df.drop_duplicates(subset=[2])
+    df.to_csv('commits.list', sep = ';', header = None, index = None)
     with open("commits.list", 'r') as f:
         urls = f.readlines()
     file_names_file = open("file_names.list", 'w')

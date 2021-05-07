@@ -7,6 +7,7 @@ import logging
 import datetime
 import tensorflow as tf
 import pickle
+import time
 import re
 from nltk.stem import PorterStemmer
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -46,16 +47,19 @@ class Commit_Response(object):
         self.length = 0
         date = datetime.date.today()
         delta = datetime.timedelta(days=20)
-        for i in range(300):
+        for i in range(120):
             datestring = date.strftime('%Y-%m-%d')
-            url = self.url_search_string + '+author-date:%3E' + datestring + '&sort=created&order=asc'
+            url = self.url_search_string + '+committer-date:%3E' + datestring + '+sort:committer-date-asc'
             print(url)
             out = requests.get(url, headers = header, auth=('GiorgosNikitopoulos', ACCESS_TOKEN))
+            self.check_header_sleep_minute(out)
             response = json.loads(out.text)
             try:
                 current_count = response['total_count']
             except Exception as e:
                 logging.warning(e)
+                logging.warning(response)
+                logging.warning(out.headers)
                 break
 
             print('CurrentCount is:')
@@ -80,11 +84,18 @@ class Commit_Response(object):
                     per_page = 100
                 else:
                     per_page = j
-                url = self.url_search_string + '+author-date:%3E' + datestring + '&sort=created&order=asc' +  '&page=' + str(page) + '&per_page=' + str(per_page)
+                url = self.url_search_string + '+committer-date:%3E' + datestring + '+sort:created&order=asc' +  '&page=' + str(page) + '&per_page=' + str(per_page)
                 print(url)
                 out = requests.get(url, headers = header, auth=('GiorgosNikitopoulos', ACCESS_TOKEN))
+                self.check_header_sleep_minute(out)
                 response = json.loads(out.text)
-                self.items.extend(response['items'])
+                try:
+                    self.items.extend(response['items'])
+                except Exceptions as e:
+                    logging.warning(e)
+                    logging.warning(response)
+                    logging.warning(out.headers)
+                    break
                 self.length = self.length + per_page
                 j = j - per_page
                 if(j == 0):
@@ -102,19 +113,29 @@ class Commit_Response(object):
             self.prs[i].repository = self.items[i]['repository']['url']
             self.prs[i].languages_url = self.items[i]['repository']['languages_url']
             self.prs[i].url = self.items[i]['url']
-            self.prs[i].nn, self.prs[i].rf = self.get_scores(self.prs[i].message)
+
+            #For scores nn and rf
+
+            #self.prs[i].nn, self.prs[i].rf = self.get_scores(self.prs[i].message)
             self.prs[i].populate_languages()
-            nn_sequence = self.nn_tokenizer.texts_to_sequences([self.prs[i].message])
-            nn_sequence = tf.keras.preprocessing.sequence.pad_sequences(nn_sequence,
-                                                                    maxlen = MAX_SEQ_LENGTH,
-                                                                    padding = 'post')
-            grads = self.compute_saliency_matrix(nn_sequence)
-            abs_nor_res = self.abs_nor_salmat(grads, nn_sequence, two_dimensions = False, range_normalize = True)
-            self.prs[i].abs_nor_res = pickle.dumps(abs_nor_res)
+
+            if i % 1000:
+                print(i)
+
+            #For abs nor salmat
+
+            #nn_sequence = self.nn_tokenizer.texts_to_sequences([self.prs[i].message])
+            #nn_sequence = tf.keras.preprocessing.sequence.pad_sequences(nn_sequence,
+            #                                                        maxlen = MAX_SEQ_LENGTH,
+            #                                                        padding = 'post')
+            #grads = self.compute_saliency_matrix(nn_sequence)
+            #abs_nor_res = self.abs_nor_salmat(grads, nn_sequence, two_dimensions = False, range_normalize = True)
+            #self.prs[i].abs_nor_res = pickle.dumps(abs_nor_res)
 
 
     def get_scores(self, message):
         ##NN Stuff
+        #tf.compat.v1.disable_eager_execution()
         nn_sequence = self.nn_tokenizer.texts_to_sequences([message])
         nn_sequence = tf.keras.preprocessing.sequence.pad_sequences(nn_sequence,
                                                                     maxlen = MAX_SEQ_LENGTH,
@@ -153,9 +174,11 @@ class Commit_Response(object):
 
     def compute_saliency_matrix(self, input_x):
         input_tensors = [self.model_linear_activation.input, K.learning_phase()]
+        #print(type(input_tensors[0]))
         saliency_input = self.model_linear_activation.layers[2].output
         saliency_output = self.model_linear_activation.layers[-1].output
         gradients = self.model_linear_activation.optimizer.get_gradients(saliency_output, saliency_input)
+        #print(type(gradients[0]))
         compute_gradients = K.function(inputs = input_tensors, outputs = gradients)
         matrix = compute_gradients([np.array(input_x), 0])[0][0, :, :]
 
@@ -172,3 +195,6 @@ class Commit_Response(object):
 
         return (dict(zip(tokens, summed_mat)))
 
+    def check_header_sleep_minute(self, response):
+        if response.headers['X-RateLimit-Remaining'] == '1':
+            time.sleep(60)

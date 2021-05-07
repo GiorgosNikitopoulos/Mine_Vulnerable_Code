@@ -4,13 +4,15 @@ import csv
 import json
 import time
 
-ACCESS_TOKEN = '<INSERT ACCESS TOKEN HERE>'
+ACCESS_TOKEN = ''
 header = {'Accept': 'application/vnd.github.cloak-preview'}
 all_messages = list()
 all_cwes = list()
 all_cves = list()
 all_commits = pd.read_csv('commits_final.list', sep = ';', quoting = csv.QUOTE_ALL, header = None)
-all_commits[2][0]
+#all_commits = pd.read_csv('../790.list', sep = ';', quoting = csv.QUOTE_ALL, header = None)
+#all_commits = pd.read_csv('../790.list', header = None)
+#all_commits[2][0]
 all_found_commits = list()
 i = 0
 for j, commit_link in enumerate(all_commits[2]):
@@ -24,6 +26,7 @@ for j, commit_link in enumerate(all_commits[2]):
     api_link = api_link.replace('www.', '')
     try:
         response = requests.get(api_link, headers = header, auth = ('GiorgosNikitopoulos', ACCESS_TOKEN))
+        #print(response)
         if response.status_code == 403:
             print("THROTTLE")
         response = json.loads(response.text)
@@ -47,5 +50,5 @@ dataframe['cwe'] = all_cwes
 dataframe['cve'] = all_cves
 dataframe['commits'] = all_found_commits
 dataframe['messages'] = all_messages
-dataframe.to_csv('secpatch_commit_msgs.list', sep = ';', header = False, index = False, quoting = csv.QUOTE_ALL)
+dataframe.to_csv('790_messages.list', sep = ';', header = False, index = False, quoting = csv.QUOTE_ALL)
 
